@@ -89,6 +89,7 @@ def veber_rule(mol):
     st.write("###")
 
 def main():
+    st.image("drug.jpg", use_column_width=True)
     st.title("SMILES to PDB Converter and 3D Visualizer")
     st.write("""
     This web-based application allows you to convert SMILES notation to PDB format and visualize the 3D structure. It includes Lipinski's Rule of Five, Ghose's Rule, and Veber's Rule analysis. Developed by Dr. Karthick Vasudevan.
