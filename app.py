@@ -47,18 +47,21 @@ def ghose_rule(mol):
         "Molecular Weight (MW)": Descriptors.MolWt(mol),
         "LogP (lipophilicity)": Descriptors.MolLogP(mol),
         "Number of Rotatable Bonds": Descriptors.NumRotatableBonds(mol),
-        "Number of Aromatic Rings": Descriptors.NumAromaticRings(mol)
+        "Number of Aromatic Rings": Descriptors.NumAromaticRings(mol),
+        "Molar Refractivity": Descriptors.MolMR(mol)
     }
     st.write("### Ghose's Rule Parameters:")
     for parameter, value in parameters.items():
         st.text(f"{parameter}: {value}")
-    if parameters["Molecular Weight (MW)"] < 480 or parameters["Molecular Weight (MW)"] > 500:
+    if parameters["Molecular Weight (MW)"] < 160 or parameters["Molecular Weight (MW)"] > 480:
         violations += 1
-    if parameters["LogP (lipophilicity)"] < 0.4 or parameters["LogP (lipophilicity)"] > 5.6:
+    if parameters["LogP (lipophilicity)"] < -0.4 or parameters["LogP (lipophilicity)"] > 5.6:
         violations += 1
     if parameters["Number of Rotatable Bonds"] > 10:
         violations += 1
     if parameters["Number of Aromatic Rings"] > 2:
+        violations += 1
+    if parameters["Molar Refractivity"] < 40 or parameters["Molar Refractivity"] > 130:
         violations += 1
     if violations == 0:
         st.success("Ghose's Rule: No violations")
@@ -70,15 +73,19 @@ def veber_rule(mol):
     violations = 0
     parameters = {
         "Number of Rotatable Bonds": Descriptors.NumRotatableBonds(mol),
-        "Molecular Weight (MW)": Descriptors.MolWt(mol)
+        "Polar Surface Area (PSA)": Descriptors.TPSA(mol)
     }
     st.write("### Veber's Rule Parameters:")
     for parameter, value in parameters.items():
         st.text(f"{parameter}: {value}")
-    if parameters["Number of Rotatable Bonds"] <= 10 and parameters["Molecular Weight (MW)"] <= 500:
-        st.success("Veber's Rule: Passed")
+    if parameters["Number of Rotatable Bonds"] > 10:
+        violations += 1
+    if parameters["Polar Surface Area (PSA)"] > 140:
+        violations += 1
+    if violations == 0:
+        st.success("Veber's Rule: No violations")
     else:
-        st.error("Veber's Rule: Failed")
+        st.error(f"Veber's Rule: {violations} violation(s)")
     st.write("###")
 
 def main():
@@ -101,7 +108,7 @@ def main():
             st.markdown(f"[Open 3D Visualization](https://molview.org/?inputFormat=pdb&structureUrl=data%3Achemical%2Fx-pdb%3Bbase64%2C{base64.b64encode(open(pdb_file, 'rb').read()).decode()})", unsafe_allow_html=True)
             st.write("### Download PDB file:")
             with open(pdb_file, "rb") as f:
-                pdb_bytes = f.read()
+               pdb_bytes = f.read()
             st.download_button(
                 label="Download PDB file",
                 data=pdb_bytes,
